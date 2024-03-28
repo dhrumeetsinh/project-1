@@ -19,7 +19,11 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-requirements = python3,kivy,nltk,pandas,wordcloud,matplotlib
+requirements = python3==3.7.6,hostpython3==3.7.6, kivy, pillow ,nltk,pandas,wordcloud,matplotlib
+
+osx.python_version=3.7.6
+
+osx.kivy_version=1.9.1
 
 # (str) Supported orientations
 orientation = portrait
