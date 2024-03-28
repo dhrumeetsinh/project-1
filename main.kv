@@ -1,0 +1,23 @@
+<TwitterSentimentApp>:
+    BoxLayout:
+        orientation: "vertical"
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 50
+
+            Label:
+                text: "Enter Query: "
+
+            TextInput:
+                id: query_input
+                text: "#Oscar2024"
+
+        Button:
+            text: "Get Tweets and Analyze Sentiment"
+            on_press: root.on_button_press(self)
+
+        Label:
+            id: output_label
+            text: "Waiting for tweets..."
