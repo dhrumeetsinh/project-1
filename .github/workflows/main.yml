@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout master branch
         uses: actions/checkout@v2
         with:
           path: master
@@ -37,13 +37,13 @@ jobs:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
 
-      - name: Checkout
+      - name: Checkout data branch
         uses: actions/checkout@v2
         with:
           path: data
-          ref: data # Branch name
+          ref: data # Checkout the data branch
 
-      - name: Set up Python
+      - name: Set up Python 3.7
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
