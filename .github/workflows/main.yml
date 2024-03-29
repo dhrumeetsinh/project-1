@@ -1,14 +1,54 @@
-            - name: Buildozer cython
-  # You may pin to the exact commit or the version.
-  # uses: 102757017/buildozer-action@49cb3ff7a94238f0dab11058bf5c4c997d15bfcd
+name: Build
+on:
+  push:
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - data
+      - gh-pages
 
-  with:
-    # Command to start Buildozer. Set to `buildozer ios debug` for iOS
-    command: # default is buildozer android debug
-    # Path to cloned repository. Set if you specified path for `actions/checkout` action.
-    repository_root: # default is .
-    # Working directory where buildozer.spec is located. Set to `src` if buildozer.spec is in `src` directory
-    workdir: # default is .
-    # Version of Buildozer to install. By default installs latest release
-    buildozer_version: # default is stable
-          
+jobs:
+  # Build job. Builds app for Android with Buildozer
+  build-android:
+    name: Build for Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: master
+
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master
+          workdir: test_app
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: ${{ steps.buildozer.outputs.filename }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x64
+
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
