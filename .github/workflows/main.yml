@@ -1,54 +1,33 @@
-name: Build
+name: Build Android App
+
 on:
   push:
-    branches-ignore:
-      - data
-      - gh-pages
-    tags:
-      - '**'
+    branches:
+      - main  # Replace 'main' with your default branch name
   pull_request:
-    branches-ignore:
-      - data
-      - gh-pages
+    branches:
+      - main  # Replace 'main' with your default branch name
 
 jobs:
-  # Build job. Builds app for Android with Buildozer
-  build-android:
-    name: Build for Android
+  build:
+    name: Build App
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout master branch
+      - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          path: master
-
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          repository_root: master
-          workdir: main
-          buildozer_version: stable
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: ${{ steps.buildozer.outputs.filename }}
-
-      - name: Checkout data branch
-        uses: actions/checkout@v2
-        with:
-          path: data
-          ref: data # Checkout the data branch
-
-      - name: Set up Python 3.7
+      
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
-          architecture: x64
-
-      - name: Push binary to data branch
-        if: github.event_name == 'push'
-        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+          python-version: '3.11.4'  # Specify the Python version you need
+        
+      - name: Install Buildozer
+        run: pip install buildozer
+        
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        with:
+          repository_root: .  # Specify the root directory of your repository
+          workdir: .  # Specify the path to your Android project within the repository
+          buildozer_version: stable  # Specify the version of Buildozer you want to use
